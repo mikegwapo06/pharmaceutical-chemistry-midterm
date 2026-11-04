@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Electronics Devices and Circuits 1 — 50-Item Mock Board Examination</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0D1219;
+    --bg-panel: #131B28;
+    --bg-elevated: #1A2433;
+    --bg-elevated-hover: #202C3E;
+    --border: #28364A;
+    --border-soft: #1F2A3B;
+    --text-primary: #E9EEF4;
+    --text-secondary: #92A4BA;
+    --text-faint: #5D6F87;
+    --accent: #F2B84B;
+    --accent-dim: #4A3C1F;
+    --correct: #3ED598;
+    --correct-dim: #15321F;
+    --incorrect: #FF6E62;
+    --incorrect-dim: #3A1A17;
+    --unanswered: #334256;
+    --focus-ring: #6FA8FF;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --bg: #0D1219;
+      --bg-panel: #131B28;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--bg);
+    color:var(--text-primary);
+    font-family:'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  body{
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .mono{ font-family:'JetBrains Mono', ui-monospace, monospace; }
+  a{color:var(--accent);}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(180deg, rgba(13,18,25,0.98), rgba(13,18,25,0.94));
+    border-bottom:1px solid var(--border-soft);
+    padding:14px 20px 12px;
+    padding-top:calc(14px + env(safe-area-inset-top,0px));
+    backdrop-filter: blur(6px);
+  }
+  .topbar-row{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    max-width:1180px; margin:0 auto;
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex; flex-direction:column; gap:2px; min-width:0;
+  }
+  .brand .eyebrow{
+    font-size:11px; letter-spacing:0.04em; color:var(--text-faint);
+    font-family:'JetBrains Mono', monospace;
+  }
+  .brand h1{
+    margin:0; font-size:17px; font-weight:600; color:var(--text-primary);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .stat-cluster{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  .stat{
+    display:flex; flex-direction:column; align-items:flex-end; line-height:1.15;
+  }
+  .stat .stat-label{ font-size:10px; color:var(--text-faint); font-family:'JetBrains Mono',monospace; }
+  .stat .stat-value{ font-size:17px; font-weight:600; font-family:'JetBrains Mono',monospace; color:var(--text-primary); }
+  .stat.score .stat-value{ color:var(--accent); }
+
+  .progress-track{
+    max-width:1180px; margin:10px auto 0; height:4px; background:var(--border-soft);
+    border-radius:2px; overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; width:0%; background:linear-gradient(90deg, var(--accent), #ffd27f);
+    transition:width .35s ease;
+  }
+
+  /* ---------- Layout ---------- */
+  .wrap{ max-width:1180px; margin:0 auto; padding:22px 20px 60px; }
+  .exam-grid{
+    display:grid; grid-template-columns: 240px 1fr; gap:22px; align-items:start;
+  }
+  @media (max-width: 860px){
+    .exam-grid{ grid-template-columns: 1fr; }
+    .nav-panel{ order:2; }
+    .question-card{ order:1; }
+  }
+
+  /* ---------- Nav panel ---------- */
+  .nav-panel{
+    background:var(--bg-panel); border:1px solid var(--border-soft);
+    border-radius:10px; padding:16px; position:sticky; top:96px;
+  }
+  @media (max-width:860px){ .nav-panel{ position:static; } }
+  .nav-panel h2{
+    font-size:12px; margin:0 0 12px; color:var(--text-secondary);
+    font-weight:600; letter-spacing:0.01em;
+  }
+  .nav-grid{
+    display:grid; grid-template-columns:repeat(5,1fr); gap:6px;
+  }
+  .nav-cell{
+    aspect-ratio:1; border-radius:5px; border:1px solid var(--border);
+    background:var(--bg-elevated); color:var(--text-secondary);
+    font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:transform .12s ease, border-color .12s ease;
+  }
+  .nav-cell:hover{ border-color:var(--text-faint); }
+  .nav-cell:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .nav-cell.current{ border-color:var(--accent); color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
+  .nav-cell.correct{ background:var(--correct-dim); border-color:var(--correct); color:var(--correct); }
+  .nav-cell.incorrect{ background:var(--incorrect-dim); border-color:var(--incorrect); color:var(--incorrect); }
+
+  .legend{ margin-top:14px; display:flex; flex-direction:column; gap:7px; }
+  .legend-row{ display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--text-secondary); }
+  .legend-swatch{ width:11px; height:11px; border-radius:3px; border:1px solid var(--border); flex:none; }
+
+  .finish-btn{
+    margin-top:16px; width:100%; padding:11px; border-radius:7px; border:1px solid var(--accent);
+    background:transparent; color:var(--accent); font-family:'JetBrains Mono',monospace;
+    font-size:12px; font-weight:600; cursor:pointer; letter-spacing:0.01em;
+    display:none;
+  }
+  .finish-btn.visible{ display:block; }
+  .finish-btn:hover{ background:var(--accent-dim); }
+
+  /* ---------- Question card ---------- */
+  .question-card{
+    background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:10px;
+    padding:28px; min-height:420px; display:flex; flex-direction:column;
+  }
+  .q-meta{
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;
+    flex-wrap:wrap; gap:8px;
+  }
+  .q-index{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-faint);
+  }
+  .q-topic{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent);
+    border:1px solid var(--accent-dim); background:rgba(242,184,75,0.08);
+    padding:3px 9px; border-radius:20px;
+  }
+  .q-text{
+    font-size:19px; line-height:1.5; font-weight:500; color:var(--text-primary);
+    margin:4px 0 22px;
+  }
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .option{
+    display:flex; align-items:flex-start; gap:12px;
+    border:1px solid var(--border); background:var(--bg-elevated);
+    border-radius:8px; padding:13px 15px; cursor:pointer;
+    transition:border-color .12s ease, background .12s ease;
+    text-align:left;
+  }
+  .option:hover:not(.locked-row){ border-color:var(--text-faint); background:var(--bg-elevated-hover); }
+  .option:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .option .badge{
+    flex:none; width:26px; height:26px; border-radius:6px; border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--text-secondary);
+  }
+  .option .opt-text{ font-size:14.5px; line-height:1.5; color:var(--text-primary); padding-top:3px; }
+  .option.selected{ border-color:var(--accent); background:rgba(242,184,75,0.08); }
+  .option.selected .badge{ border-color:var(--accent); color:var(--accent); }
+  .option.locked-row{ cursor:default; }
+  .option.reveal-correct{ border-color:var(--correct); background:var(--correct-dim); }
+  .option.reveal-correct .badge{ border-color:var(--correct); color:var(--correct); }
+  .option.reveal-incorrect{ border-color:var(--incorrect); background:var(--incorrect-dim); }
+  .option.reveal-incorrect .badge{ border-color:var(--incorrect); color:var(--incorrect); }
+
+  .feedback{
+    margin-top:18px; padding:14px 16px; border-radius:8px; border:1px solid var(--border);
+    font-size:13.5px; line-height:1.55; display:none;
+  }
+  .feedback.show{ display:block; }
+  .feedback.correct{ border-color:var(--correct); background:var(--correct-dim); color:#CDF7E3; }
+  .feedback.incorrect{ border-color:var(--incorrect); background:var(--incorrect-dim); color:#FFD9D4; }
+  .feedback .fb-title{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; letter-spacing:0.02em; margin-bottom:5px; }
+  .feedback .fb-concept-label{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-faint); margin-top:9px; display:block; }
+
+  .card-footer{
+    margin-top:auto; padding-top:22px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    flex-wrap:wrap;
+  }
+  .nav-buttons{ display:flex; gap:10px; }
+  .btn{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:13.5px;
+    padding:10px 18px; border-radius:7px; cursor:pointer; border:1px solid var(--border);
+    background:var(--bg-elevated); color:var(--text-primary); transition:all .12s ease;
+  }
+  .btn:hover:not(:disabled){ border-color:var(--text-faint); }
+  .btn:disabled{ opacity:0.35; cursor:not-allowed; }
+  .btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#1A1306; }
+  .btn.primary:hover:not(:disabled){ background:#ffc563; }
+  .btn.ghost{ background:transparent; }
+
+  /* ---------- Results screen ---------- */
+  .results{ display:none; }
+  .results.show{ display:block; }
+  .exam-grid.hidden{ display:none; }
+
+  .score-dashboard{
+    background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:10px;
+    padding:32px; text-align:center; margin-bottom:26px;
+  }
+  .score-dashboard .big-score{
+    font-family:'JetBrains Mono',monospace; font-size:56px; font-weight:700; color:var(--accent);
+    line-height:1;
+  }
+  .score-dashboard .big-score small{ font-size:22px; color:var(--text-faint); font-weight:500; }
+  .score-dashboard .pct{ font-size:15px; color:var(--text-secondary); margin-top:6px; }
+  .assessment{
+    margin-top:18px; display:inline-block; padding:8px 18px; border-radius:20px;
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:600; letter-spacing:0.02em;
+    border:1px solid var(--border);
+  }
+  .breakdown{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:26px;
+  }
+  @media (max-width:560px){ .breakdown{ grid-template-columns:1fr; } }
+  .breakdown .cell{
+    background:var(--bg-elevated); border:1px solid var(--border); border-radius:8px; padding:14px;
+  }
+  .breakdown .cell .num{ font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:700; }
+  .breakdown .cell .label{ font-size:11.5px; color:var(--text-secondary); margin-top:3px; }
+  .breakdown .cell.correct .num{ color:var(--correct); }
+  .breakdown .cell.incorrect .num{ color:var(--incorrect); }
+
+  .retake-btn{
+    margin-top:24px; padding:12px 26px; border-radius:7px; border:1px solid var(--accent);
+    background:var(--accent); color:#1A1306; font-weight:700; font-size:14px; cursor:pointer;
+    font-family:'Space Grotesk',sans-serif;
+  }
+  .retake-btn:hover{ background:#ffc563; }
+
+  .review-section h2{ font-size:15px; color:var(--text-primary); margin:0 0 14px; }
+  .review-item{
+    background:var(--bg-panel); border:1px solid var(--border-soft); border-radius:9px;
+    padding:18px 20px; margin-bottom:12px;
+  }
+  .review-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; flex-wrap:wrap; }
+  .review-num{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-faint); }
+  .review-status{
+    font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px;
+    border:1px solid var(--border);
+  }
+  .review-status.correct{ color:var(--correct); border-color:var(--correct); background:var(--correct-dim); }
+  .review-status.incorrect{ color:var(--incorrect); border-color:var(--incorrect); background:var(--incorrect-dim); }
+  .review-q{ font-size:14.5px; line-height:1.5; margin-bottom:10px; color:var(--text-primary); }
+  .review-ans{ font-size:13px; color:var(--text-secondary); line-height:1.6; }
+  .review-ans b{ color:var(--text-primary); font-weight:600; }
+  .review-concept{
+    margin-top:9px; font-size:12.5px; color:#FFD9D4; background:var(--incorrect-dim);
+    border:1px solid var(--incorrect); border-radius:6px; padding:9px 12px; line-height:1.5;
+  }
+  .review-concept .lbl{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--incorrect); display:block; margin-bottom:3px; letter-spacing:0.02em; }
+
+  footer.app-footer{ text-align:center; color:var(--text-faint); font-size:11.5px; padding:30px 0 10px; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="brand">
+      <span class="eyebrow mono">EDC 1 · MOCK BOARD EXAMINATION</span>
+      <h1>Electronics Devices and Circuits 1</h1>
+    </div>
+    <div class="stat-cluster">
+      <div class="stat">
+        <span class="stat-label mono">QUESTION</span>
+        <span class="stat-value mono" id="qCounter">1 / 50</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label mono">ANSWERED</span>
+        <span class="stat-value mono" id="answeredCounter">0 / 50</span>
+      </div>
+      <div class="stat score">
+        <span class="stat-label mono">SCORE</span>
+        <span class="stat-value mono" id="scoreCounter">0 / 50</span>
+      </div>
+    </div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="wrap">
+
+  <div class="exam-grid" id="examGrid">
+    <!-- NAV PANEL -->
+    <div class="nav-panel">
+      <h2>QUESTION NAVIGATOR</h2>
+      <div class="nav-grid" id="navGrid"></div>
+      <div class="legend">
+        <div class="legend-row"><span class="legend-swatch" style="background:var(--bg-elevated);border-color:var(--border);"></span>Unanswered</div>
+        <div class="legend-row"><span class="legend-swatch" style="border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;"></span>Current</div>
+        <div class="legend-row"><span class="legend-swatch" style="background:var(--correct-dim);border-color:var(--correct);"></span>Correct</div>
+        <div class="legend-row"><span class="legend-swatch" style="background:var(--incorrect-dim);border-color:var(--incorrect);"></span>Incorrect</div>
+      </div>
+      <button class="finish-btn" id="finishBtn">VIEW FINAL RESULTS →</button>
+    </div>
+
+    <!-- QUESTION CARD -->
+    <div class="question-card">
+      <div class="q-meta">
+        <span class="q-index mono" id="qIndexLabel">ITEM 01</span>
+        <span class="q-topic mono" id="qTopicLabel">TOPIC</span>
+      </div>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="optionsList"></div>
+      <div class="feedback" id="feedback">
+        <div class="fb-title" id="fbTitle"></div>
+        <div id="fbBody"></div>
+      </div>
+      <div class="card-footer">
+        <div class="nav-buttons">
+          <button class="btn ghost" id="prevBtn">← Previous</button>
+          <button class="btn ghost" id="nextBtn">Next →</button>
+        </div>
+        <button class="btn primary" id="submitBtn" disabled>Submit Answer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="results" id="resultsScreen">
+    <div class="score-dashboard">
+      <div class="big-score"><span id="finalScore">0</span><small> / 50</small></div>
+      <div class="pct mono" id="finalPct">0% overall</div>
+      <div class="assessment" id="assessment">—</div>
+      <div class="breakdown">
+        <div class="cell"><div class="num mono" id="totalAnswered">0</div><div class="label">Questions Answered</div></div>
+        <div class="cell correct"><div class="num mono" id="totalCorrect">0</div><div class="label">Correct Answers</div></div>
+        <div class="cell incorrect"><div class="num mono" id="totalIncorrect">0</div><div class="label">Incorrect Answers</div></div>
+      </div>
+      <div><button class="retake-btn" id="retakeBtn">RETAKE EXAMINATION</button></div>
+    </div>
+
+    <div class="review-section">
+      <h2>Complete Answer Review</h2>
+      <div id="reviewList"></div>
+    </div>
+  </div>
+
+  <footer class="app-footer">EDC1_50_ITEM_INTERACTIVE_MOCK_BOARD_EXAM · Sourced strictly from the provided reviewer material</footer>
+</div>
+
+<script>
+const QUESTIONS = [{"topic": "Atomic Theory", "q": "Which scientist introduced the concept of quantized electron energy levels, in which electrons occupy discrete orbits around the nucleus?", "options": ["J.J. Thomson", "Niels Bohr", "Ernest Rutherford", "John Dalton"], "correct": 1, "concept": "Niels Bohr proposed that electrons occupy fixed, quantized energy levels around the nucleus."}, {"topic": "Band Theory", "q": "Silicon has a band gap of 1.12 eV while germanium has a band gap of 0.66 eV. Based on these values alone, which material is expected to have the higher intrinsic carrier concentration at 300K?", "options": ["Silicon, because its moderate band gap favors carrier generation", "Germanium, because its smaller band gap allows easier carrier generation", "Both are equal, since band gap does not affect carrier concentration", "Neither, since carrier concentration depends only on doping level"], "correct": 1, "concept": "A smaller band gap lets more electrons jump to the conduction band at a given temperature, so germanium has a higher intrinsic carrier concentration than silicon."}, {"topic": "Intrinsic/Extrinsic", "q": "A semiconductor sample has exactly equal concentrations of free electrons and holes, and no impurity atoms have been added. How is this sample best classified?", "options": ["Extrinsic, N-type", "Intrinsic semiconductor", "Extrinsic, P-type", "Conductor"], "correct": 1, "concept": "An intrinsic semiconductor is pure, with electron concentration exactly equal to hole concentration (n = p = ni)."}, {"topic": "N-Type Doping", "q": "A silicon crystal is doped with arsenic, a pentavalent element. Four of arsenic’s valence electrons form covalent bonds with neighboring silicon atoms. What is the resulting material called, and what role does the fifth electron play?", "options": ["N-type material; the fifth electron is loosely bound and becomes a free majority carrier", "P-type material; the fifth electron creates a hole that becomes the majority carrier", "N-type material; the fifth electron remains tightly bound as a minority carrier", "P-type material; the fifth electron combines with a hole to neutralize the lattice"], "correct": 0, "concept": "Pentavalent dopants like arsenic donate one extra, loosely bound electron, making electrons the majority carrier in N-type material."}, {"topic": "P-Type Doping", "q": "Boron, a trivalent element, is added to a silicon lattice, leaving one covalent bond incomplete. Which statement correctly describes the resulting majority and minority carriers?", "options": ["Holes are majority carriers and electrons are minority carriers, since the incomplete bond creates a hole", "Electrons are majority carriers and holes are minority carriers, since boron accepts electrons", "Holes and electrons exist in exactly equal numbers, since boron acts as an intrinsic dopant", "Boron produces no free carriers because it has fewer valence electrons than silicon"], "correct": 0, "concept": "Trivalent acceptor atoms such as boron create holes, which become the majority carrier in P-type material."}, {"topic": "Shockley Equation", "q": "The thermal voltage VT = kT/q is approximately 25.85 mV at 300K. In the Shockley equation, how does diode current ID relate to forward voltage VD and VT?", "options": ["ID increases linearly with VD, with VT acting as a simple multiplying constant", "ID is independent of VT and depends only on the saturation current IS", "ID decreases exponentially as VD increases, for a fixed VT", "ID increases exponentially with VD, scaled by VT in the exponent’s denominator"], "correct": 3, "concept": "The Shockley equation shows diode current rising exponentially with forward voltage, with thermal voltage VT setting the exponent’s scale."}, {"topic": "Built-in Potential", "q": "The built-in potential barrier of an unbiased silicon PN junction is approximately 0.7V. What is the corresponding built-in potential barrier for a germanium PN junction?", "options": ["Approximately 0.7V, identical to silicon", "Approximately 1.2V", "Approximately 0.3V", "Approximately 0V, since germanium has no barrier"], "correct": 2, "concept": "Germanium’s built-in potential barrier (about 0.3V) is lower than silicon’s (about 0.7V)."}, {"topic": "Forward Bias", "q": "A battery’s positive terminal is connected to a diode’s anode (P-side) and its negative terminal to the cathode (N-side). Once the barrier voltage is exceeded, what happens to the depletion region and current?", "options": ["The depletion region shrinks and the diode conducts significant current", "The depletion region widens and only leakage current flows", "The depletion region remains unchanged while voltage builds across it", "The depletion region shrinks, but current flow remains blocked indefinitely"], "correct": 0, "concept": "Forward bias shrinks the depletion region and allows substantial current once the barrier voltage is exceeded."}, {"topic": "Reverse Bias", "q": "A battery’s positive terminal is connected to a diode’s cathode (N-side) and its negative terminal to the anode (P-side). What is the expected effect on the depletion region and current?", "options": ["The depletion region shrinks, allowing large current flow", "The depletion region widens, but current flow increases proportionally", "The depletion region widens, acting as an insulator with only a tiny leakage current", "The depletion region is unaffected, since reverse bias affects only voltage, not width"], "correct": 2, "concept": "Reverse bias widens the depletion region, making the junction behave like an insulator except for a small leakage current."}, {"topic": "Diode Parameters", "q": "A diode datasheet lists both Peak Inverse Voltage (PIV) and Breakdown Voltage (VBR). Which statement correctly distinguishes the two?", "options": ["PIV and VBR are two different names for exactly the same specification", "PIV is the maximum reverse voltage the diode will experience in the circuit; VBR is the reverse voltage at which the diode’s junction actually breaks down", "PIV describes forward conduction, while VBR describes reverse conduction", "PIV is measured in current, while VBR is measured in voltage"], "correct": 1, "concept": "PIV describes the maximum reverse voltage expected in operation, while VBR is the voltage at which the diode’s junction actually breaks down."}, {"topic": "Diode Models", "q": "For a quick hand calculation, an engineer assumes a silicon diode always drops exactly 0.7V whenever it conducts, ignoring its curved I-V characteristic entirely. Which diode model is being applied?", "options": ["Ideal diode model", "Load-line model", "Constant-voltage-drop model", "Piecewise-linear model using rd"], "correct": 2, "concept": "The constant-voltage-drop model simplifies analysis by assuming a fixed 0.7V drop for a conducting silicon diode."}, {"topic": "Water-Valve Analogy", "q": "In the diode water-valve analogy, water pressure from the left must overcome the restoring force of a spring before the plate opens. What electrical concept does this spring represent?", "options": ["The reverse leakage current of the diode", "The forward-bias potential barrier (about 0.6–0.7V) that must be overcome before conduction", "The breakdown voltage in reverse bias", "The junction capacitance of the depletion region"], "correct": 1, "concept": "The valve’s spring models the potential barrier a diode must overcome before it conducts in forward bias."}, {"topic": "DC Switch Lab", "q": "During a DC switch lab test on a 1N4001 diode, what were the measured results in forward bias versus reverse bias?", "options": ["Forward bias: approximately 0.672V across the diode; Reverse bias: ID = 0, VR = 0 (open switch)", "Forward bias: ID = 0, VR = 0 (open switch); Reverse bias: approximately 0.672V across the diode", "Both forward and reverse bias measured ID = 0 and VR = 0", "Both forward and reverse bias measured approximately 0.672V across the diode"], "correct": 0, "concept": "A forward-biased diode drops roughly 0.672V and conducts, while a reverse-biased diode acts as an open switch with no current and no load voltage drop."}, {"topic": "Half-Wave Rectifier", "q": "A half-wave rectifier processes a sine-wave input. Which statement correctly describes its output characteristics?", "options": ["It blocks the negative swing, and its output frequency equals the input frequency", "It blocks the negative swing, and its output frequency is double the input frequency", "It transforms the negative swing into a positive swing, doubling the output frequency", "It blocks the positive swing while passing the negative swing unchanged"], "correct": 0, "concept": "A half-wave rectifier removes one half-cycle entirely, so its output ripple frequency equals the input frequency."}, {"topic": "Full-Wave Center-Tapped", "q": "Which rectifier topology converts the negative half-cycle into a positive one, requires a center-tapped transformer, and produces an output frequency twice the input frequency?", "options": ["Half-wave rectifier", "Full-wave bridge rectifier", "Series clipper", "Full-wave center-tapped rectifier"], "correct": 3, "concept": "A full-wave center-tapped rectifier converts both half-cycles to the same polarity using a center-tapped transformer, doubling the ripple frequency."}, {"topic": "Full-Wave Bridge", "q": "A rectifier uses four diodes, needs no center-tapped transformer, and has two diodes conducting in series during each half-cycle. By roughly how much is the output peak voltage reduced relative to the input peak, and why?", "options": ["By about 0.7V, due to a single diode drop in the current path", "By about 2.8V, due to four diode drops in series in the current path", "By 0V, because the bridge configuration eliminates diode drops entirely", "By about 1.4V, due to two diode drops in series in the current path"], "correct": 3, "concept": "In a full-wave bridge rectifier, two diodes conduct in series during each half-cycle, so the output peak is reduced by two diode drops (about 1.4V for silicon)."}, {"topic": "Rectifier DC Output", "q": "For a full-wave rectifier (bridge or center-tapped) with peak secondary voltage Vp, which formula gives the average DC output voltage?", "options": ["VDC = 2Vp / π", "VDC = Vp / π", "VDC = Vp × √2", "VDC = Vp / 2π"], "correct": 0, "concept": "A full-wave rectifier’s average DC output is twice that of a half-wave rectifier for the same peak voltage, giving VDC = 2Vp/π."}, {"topic": "Peak Voltage", "q": "An AC source reads 120V RMS on a multimeter. What is the corresponding peak voltage?", "options": ["120V / √2 ≈ 84.9V", "120V × √2 ≈ 169.7V", "120V × π ≈ 376.8V", "120V, since RMS and peak voltage are the same value"], "correct": 1, "concept": "Peak voltage is derived from RMS voltage by multiplying by √2."}, {"topic": "Filtering", "q": "A filter capacitor is placed across a rectifier’s load to smooth the pulsating DC output. For effective filtering, which relationship must hold between the load resistance R, capacitance C, and ripple frequency fripple?", "options": ["RC must be much less than 1/fripple", "RC must equal exactly 1/fripple", "RC must be much greater than 1/fripple", "RC has no relationship to fripple; only the capacitor’s voltage rating matters"], "correct": 2, "concept": "Effective filtering requires the RC time constant to be much longer than the ripple period so the capacitor barely discharges between pulses."}, {"topic": "Series KVL", "q": "A 10V source is connected in series with two silicon diodes (0.7V drop each) and a resistor. What is the voltage across the resistor?", "options": ["8.6V", "10V", "9.3V", "7.9V"], "correct": 0, "concept": "In a series diode circuit, the resistor’s voltage equals the source voltage minus the sum of all forward diode drops."}, {"topic": "Series KVL with LED", "q": "A 16V source drives three silicon diodes, one LED (1.2V forward drop), and a 7kΩ resistor, all in series. What is the resulting series current?", "options": ["2.29 mA", "1.63 mA", "2.00 mA", "1.81 mA"], "correct": 3, "concept": "To find series current, first subtract every forward diode and LED drop from the source voltage, then divide the remainder by the resistance."}, {"topic": "Parallel Diode Sharing", "q": "Two identical diodes are connected in parallel with equal series resistors, intended to share current equally. What typically happens in practice, and what component is commonly added to correct it?", "options": ["Current naturally splits evenly; no correction is needed", "Current splits unevenly due to real diode mismatches; ballast resistors are added to force even sharing", "Current splits unevenly, requiring a second power supply to correct it", "Current always flows through only one diode permanently, no matter what is added"], "correct": 1, "concept": "Real parallel diodes conduct unevenly, so ballast resistors are used to force balanced current sharing."}, {"topic": "KVL Rule", "q": "When applying KVL to a series diode circuit, how should forward-biased diode voltage drops be treated relative to the source voltage when finding the resistor voltage?", "options": ["They should be added to the source voltage", "They should be ignored, since diode drops do not affect KVL", "They should be subtracted from the source voltage", "They should be multiplied by the number of diodes present"], "correct": 2, "concept": "KVL requires subtracting each forward diode drop from the source voltage to find the remaining voltage across series resistors."}, {"topic": "Shunt Clipper", "q": "A diode is placed in parallel with the load so that it conducts and shorts out voltage beyond a set threshold. Which type of circuit is this?", "options": ["Series clipper", "Biased clipper", "Clamper", "Shunt clipper"], "correct": 3, "concept": "A shunt clipper is placed in parallel with the load and conducts to short out voltage beyond its threshold."}, {"topic": "Series Clipper", "q": "A diode is placed in series with the load, blocking current during one specific polarity of the input waveform. Which type of circuit is this?", "options": ["Shunt clipper", "Clamper", "Full-wave rectifier", "Series clipper"], "correct": 3, "concept": "A series clipper blocks one polarity of the waveform because the diode sits in series with the load."}, {"topic": "Biased Clipper", "q": "A circuit adds a DC source in combination with a diode specifically to change the voltage level at which clipping begins. What is this configuration called?", "options": ["Shunt clipper", "Clamper", "Biased clipper", "Series clipper"], "correct": 2, "concept": "A biased clipper uses an added DC source to shift the voltage level at which clipping occurs."}, {"topic": "Clampers", "q": "A clamper circuit is built using a diode, capacitor, and resistor. What is its function, and what circuit condition ensures it works correctly?", "options": ["It cuts off part of the waveform; the RC time constant must be short relative to the signal period", "It rectifies the waveform into pulsating DC; capacitor size is irrelevant", "It shifts the entire waveform to a new DC level without changing its shape; the RC time constant must be long enough to hold the capacitor’s charge", "It amplifies the waveform; the diode must always remain reverse biased"], "correct": 2, "concept": "A clamper shifts a waveform’s DC level without altering its shape, and needs a long RC time constant so the capacitor holds its charge between cycles."}, {"topic": "Zener vs Avalanche", "q": "A heavily doped diode is operated in reverse breakdown as a voltage regulator. Below approximately 5.6V, which breakdown mechanism dominates, and above that voltage, which mechanism takes over?", "options": ["Avalanche effect below 5.6V; Zener effect above 5.6V", "Zener effect below 5.6V; Avalanche effect above 5.6V", "Thermal runaway below 5.6V; Zener effect above 5.6V", "Zener effect dominates at all voltages; avalanche does not occur in these diodes"], "correct": 1, "concept": "The Zener effect dominates breakdown below about 5.6V, while the avalanche effect dominates above it."}, {"topic": "Zener Series Resistor", "q": "A Zener diode is installed in a voltage regulator circuit. Why is a series resistor required?", "options": ["To increase the diode’s Zener voltage rating", "To limit current through the diode and prevent thermal destruction", "To convert the diode from avalanche mode into Zener mode", "To eliminate the need for a knee current rating"], "correct": 1, "concept": "A series resistor limits current through a Zener diode so it is not thermally destroyed while regulating voltage."}, {"topic": "LED Wavelength", "q": "Comparing typical LED forward voltages by color (green, yellow, orange, red), which of these colors has the shortest wavelength and which has the longest?", "options": ["Red has the shortest wavelength; green has the longest", "All LED colors share the same wavelength, regardless of forward voltage", "Orange has the shortest wavelength; yellow has the longest", "Green has the shortest wavelength; red has the longest"], "correct": 3, "concept": "Among common LED colors, green has the shortest wavelength and red has the longest."}, {"topic": "Tricolor LED", "q": "A tricolor LED package contains two anti-parallel LEDs, such as red and green. How is the emitted color changed?", "options": ["By varying only the magnitude of the supply voltage", "By adding a series resistor of a different value", "By operating the package in reverse bias", "By reversing the direction of current flow through the package"], "correct": 3, "concept": "A tricolor LED changes color because reversing current direction forward-biases the other anti-parallel LED inside the package."}, {"topic": "Photodiodes", "q": "A photodiode is used in a light-sensing circuit. In which bias condition does it normally operate, and what does incoming light produce?", "options": ["Forward bias; light increases the forward voltage drop", "Forward bias; light has no measurable effect on current", "Reverse bias; light generates a highly linear reverse current as photons free bound electrons", "Reverse bias; light has no effect until the breakdown voltage is reached"], "correct": 2, "concept": "Photodiodes operate in reverse bias, where light striking the junction produces a reverse current that is linear with light intensity."}, {"topic": "Solar Cells", "q": "A single solar cell measures approximately 0.45V to 0.5V with nothing connected to it. What is this measurement called, and how does connecting several cells in series change it?", "options": ["Short-circuit current; series connection increases the total current", "Open-circuit voltage; series connection increases the total current", "Open-circuit voltage; series connection increases the total voltage", "Short-circuit current; series connection increases the total voltage"], "correct": 2, "concept": "A solar cell’s open-circuit voltage is roughly 0.45–0.5V per cell, and wiring cells in series increases total output voltage."}, {"topic": "Photodiode vs Photoresistor", "q": "A photodiode and a photoresistor (LDR) are compared for use in a light-sensing circuit. Which statement correctly distinguishes their behavior?", "options": ["The photoresistor is a true PN-junction device, while the photodiode is simply a light-sensitive crystal", "The photoresistor has high resistance when illuminated and low resistance in the dark", "Both devices have identical response speeds and are interchangeable in all applications", "The photodiode responds very quickly, while the photoresistor responds much more slowly, on the order of milliseconds"], "correct": 3, "concept": "Photodiodes respond very fast, while photoresistors (LDRs) are far slower, reacting on the order of milliseconds."}, {"topic": "Schottky/Tunnel/Varactor", "q": "Three advanced diode types are described: one uses a metal-semiconductor junction for fast switching with a low forward drop; one exploits quantum tunneling to produce negative resistance; and one acts as a voltage-controlled capacitor in reverse bias. Identify them in the order described.", "options": ["Varactor, Schottky, Tunnel", "Schottky, Tunnel, Varactor", "Tunnel, Varactor, Schottky", "Schottky, Varactor, Tunnel"], "correct": 1, "concept": "Schottky diodes switch fast with a low forward drop, tunnel diodes exhibit negative resistance via quantum tunneling, and varactor diodes act as voltage-controlled capacitors."}, {"topic": "BJT Basics", "q": "Which statement correctly describes a BJT’s basic operating principle?", "options": ["It is a voltage-controlled device where gate voltage regulates drain-source current", "It is a two-terminal device that conducts in only one direction", "It is a voltage-controlled device with input impedance near 10^14 Ω", "It is a current-controlled device with three terminals: Emitter, Base, and Collector"], "correct": 3, "concept": "A BJT is a current-controlled, three-terminal device (Emitter, Base, Collector), unlike the voltage-controlled FET family."}, {"topic": "NPN Transistor", "q": "For an NPN transistor to turn on and allow collector current to flow, which condition must be met, and in which direction does conventional current flow through the device?", "options": ["VB must be below VE by at least 0.6V; current flows Emitter to Collector", "VB must exactly equal VE; current flows Base to Emitter only", "VB must exceed VE; current flows Emitter to Base only", "VB must exceed VE by more than approximately 0.6V; current flows Collector to Emitter"], "correct": 3, "concept": "An NPN transistor turns on when its base is more positive than its emitter by about 0.6V, allowing current to flow from collector to emitter."}, {"topic": "PNP Transistor", "q": "For a PNP transistor to conduct, how must the base voltage relate to the emitter voltage, and in which direction does current flow?", "options": ["VB must be negative relative to VE; current flows Emitter to Collector", "VB must be positive relative to VE; current flows Collector to Emitter", "VB must be negative relative to VE; current flows Collector to Emitter", "VB must equal VE; current flows Base to Collector"], "correct": 0, "concept": "A PNP transistor turns on when its base is negative relative to its emitter, with current flowing from emitter to collector."}, {"topic": "JFET Operation", "q": "An N-channel JFET is described as a ’normally ON’ depletion device. What happens as its gate-to-source voltage becomes increasingly negative?", "options": ["Channel resistance decreases, driving the device further ON", "The device switches from N-channel to P-channel operation", "Channel resistance increases, progressively turning the device OFF", "Gate voltage has no effect on channel resistance in a JFET"], "correct": 2, "concept": "In an N-channel JFET, an increasingly negative gate voltage increases channel resistance, turning the normally-ON device off."}, {"topic": "MOSFET Vulnerability", "q": "A MOSFET requires careful handling during assembly. What characteristic makes it especially vulnerable to damage, and why?", "options": ["Its very low input impedance allows large currents to flow through the gate", "Its current-controlled base terminal is easily overloaded by static charge", "Its enormous input impedance (~10^14 Ω), due to the metal-oxide gate insulator, makes it extremely sensitive to static electricity", "Its PN-junction gate is forward-biased by static electricity, destroying the channel"], "correct": 2, "concept": "A MOSFET’s insulated gate gives it extremely high input impedance, which makes it highly vulnerable to static-electricity damage."}, {"topic": "Enhancement vs Depletion MOSFET", "q": "Comparing enhancement-type and depletion-type MOSFETs, which statement is correct?", "options": ["Enhancement type is normally OFF and needs gate voltage to create a conducting channel; depletion type is normally ON and gate voltage reduces current", "Enhancement type is normally ON; depletion type is normally OFF", "Both types are normally ON and behave identically in operation", "Enhancement type uses a PN-junction gate; depletion type uses a metal-oxide gate"], "correct": 0, "concept": "Enhancement-type MOSFETs are normally off and need gate voltage to conduct, while depletion-type MOSFETs are normally on and gate voltage reduces conduction."}, {"topic": "Phototransistor vs Photo-FET", "q": "A phototransistor and a photo-FET are compared. How does light affect each device?", "options": ["In a phototransistor, light generates a gate control voltage; in a photo-FET, light directly produces drain current with no amplification", "Both devices amplify collector current directly, with no base or gate control involved", "In a phototransistor, light generates a base current that is internally amplified into collector-emitter current; in a photo-FET, light generates a gate control voltage", "Neither device responds to light directly; both require an external photoresistor"], "correct": 2, "concept": "A phototransistor amplifies a light-generated base current into a larger collector current, while a photo-FET uses light to generate a gate control voltage."}, {"topic": "Water-Valve Analogy (Reverse)", "q": "In the diode water-valve analogy, when water pressure pushes from the right, the movable plate presses firmly against a solid stop and no water flows. What does this solid stop represent electrically?", "options": ["The reverse-biased depletion region blocking current flow", "The forward conduction of current once the barrier voltage is exceeded", "The thermal voltage of the diode", "The ripple voltage of a filtered rectifier output"], "correct": 0, "concept": "The solid stop in the water-valve analogy represents the reverse-biased depletion region blocking current flow."}, {"topic": "Transistor Faucet Analogy", "q": "In the transistor faucet analogy, the base lead is compared to the control knob of a faucet. What does this illustrate about transistor operation?", "options": ["A small electrical current at the base regulates a much larger current from collector to emitter", "A large base current is needed to control a comparatively small collector current", "The base has no real effect on the current flowing between collector and emitter", "The collector current is always numerically equal to the base current"], "correct": 0, "concept": "The faucet analogy shows that a small base current controls a much larger collector-to-emitter current, illustrating amplification."}, {"topic": "Diode Symbols", "q": "On a schematic, a diode’s cathode bar is drawn with inward-facing brackets, or ’T-shaped’ ends. Which diode type does this represent, and how does it differ from a Zener diode’s symbol, which uses bent, ’Z-shaped’ angular flags?", "options": ["Schottky diode; its cathode bar is shaped like a stylized ’S’, unlike the Zener’s flags", "Tunnel diode; its bracket/T-shaped cathode bar is distinct from the Zener’s bent angular flags", "Gunn diode; its symbol uses overlapping triangles, unlike the Zener’s flags", "Avalanche diode; it uses the exact same angular flags as a Zener diode"], "correct": 1, "concept": "A tunnel diode’s schematic symbol uses inward-facing brackets or T-shaped cathode bar ends, distinguishing it from a Zener’s bent Z-shaped flags."}, {"topic": "Relay Lab", "q": "In a light-activated relay circuit, a photoresistor or phototransistor pulls the base of a 2N2222 transistor HIGH when illuminated, triggering a relay coil. What component protects the circuit from the coil’s back-EMF, and what change converts this circuit into a dark-activated relay?", "options": ["A 1N4001 rectifier diode protects the circuit; reversing the relay coil’s polarity converts it to dark-activated", "A 1N4002 flyback diode protects the circuit; tuning a 100K potentiometer in the voltage divider so darkness pulls the base HIGH converts it to dark-activated", "A Zener diode regulates the base voltage; adding a second phototransistor converts it to dark-activated", "A varactor diode tunes circuit sensitivity; no potentiometer adjustment is needed for dark-activation"], "correct": 1, "concept": "A flyback diode (1N4002) protects the transistor from relay coil back-EMF, and adjusting the voltage-divider potentiometer so darkness pulls the base HIGH creates a dark-activated relay."}, {"topic": "Optical Tachometer", "q": "An optical tachometer uses a rotating disc with a single hole that interrupts a light beam aimed at a phototransistor. How is RPM determined from this setup?", "options": ["By measuring the steady-state voltage across the phototransistor", "By counting the frequency of the resulting pulsed signal as the hole passes the beam each rotation", "By measuring the resistance change of the phototransistor over one full rotation", "By measuring the DC current drawn by the light source itself"], "correct": 1, "concept": "An optical tachometer determines RPM by counting the pulse frequency produced as a disc’s hole interrupts a light beam once per rotation."}, {"topic": "Curve Tracer Lab", "q": "A QT4828 curve tracer sweeps a 10V scan range across a 1N400x diode. What is the primary purpose of this lab procedure?", "options": ["To experimentally verify the forward I-V characteristic and identify the exact knee region", "To measure only the diode’s reverse leakage current", "To determine the diode’s power dissipation rating under reverse bias", "To measure the capacitance of the depletion region"], "correct": 0, "concept": "A curve tracer sweeps voltage to plot a diode’s forward I-V characteristic and locate its knee region experimentally."}, {"topic": "Advanced Materials", "q": "Three advanced semiconductor materials are compared: one offers high electron mobility suited to high-frequency and microwave use; a pair offers wide-bandgap capability suited to high-power, high-voltage operation such as EVs; and one has a direct bandgap ideal for fiber-optic communication. Match each description to its material(s).", "options": ["GaAs = high-frequency/microwave; GaN & SiC = high-power/high-voltage; InP = fiber-optic communication", "InP = high-frequency/microwave; GaAs = high-power/high-voltage; GaN & SiC = fiber-optic communication", "GaN & SiC = high-frequency/microwave; GaAs = high-power/high-voltage; InP = fiber-optic communication", "GaAs = fiber-optic communication; InP = high-power/high-voltage; GaN & SiC = high-frequency/microwave"], "correct": 0, "concept": "GaAs suits high-frequency uses, GaN and SiC are wide-bandgap materials for high-power applications, and InP’s direct bandgap suits fiber-optic communication."}, {"topic": "Oscilloscope Clipping Lab", "q": "In a dual-trace oscilloscope clipping lab, CH1 measures VIN and CH2 measures VOUT with a common ground shared between the function generator and the oscilloscope, using a 1 kHz, ~2V peak sine wave. If the diode’s physical orientation in the breadboard is reversed, what happens to the observed clipping?", "options": ["The clipping disappears entirely, since the diode no longer conducts", "The clipping frequency doubles, but the affected half-cycle stays the same", "The output waveform becomes a full-wave rectified signal instead of a clipped one", "The clipping effect flips to affect the opposite half-cycle of the waveform"], "correct": 3, "concept": "Reversing a clipping diode’s orientation flips which half-cycle of the waveform gets clipped."}];
+
+const TOTAL = QUESTIONS.length;
+let current = 0;
+let selected = new Array(TOTAL).fill(null);   // pending / chosen option index
+let locked = new Array(TOTAL).fill(false);    // true once submitted
+let score = 0;
+
+const letters = ['A','B','C','D'];
+
+const qCounter = document.getElementById('qCounter');
+const answeredCounter = document.getElementById('answeredCounter');
+const scoreCounter = document.getElementById('scoreCounter');
+const progressFill = document.getElementById('progressFill');
+const navGrid = document.getElementById('navGrid');
+const finishBtn = document.getElementById('finishBtn');
+const qIndexLabel = document.getElementById('qIndexLabel');
+const qTopicLabel = document.getElementById('qTopicLabel');
+const qText = document.getElementById('qText');
+const optionsList = document.getElementById('optionsList');
+const feedback = document.getElementById('feedback');
+const fbTitle = document.getElementById('fbTitle');
+const fbBody = document.getElementById('fbBody');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const submitBtn = document.getElementById('submitBtn');
+const examGrid = document.getElementById('examGrid');
+const resultsScreen = document.getElementById('resultsScreen');
+
+function buildNavGrid(){
+  navGrid.innerHTML = '';
+  for(let i=0;i<TOTAL;i++){
+    const cell = document.createElement('button');
+    cell.className = 'nav-cell mono';
+    cell.textContent = (i+1);
+    cell.setAttribute('aria-label', 'Go to question ' + (i+1));
+    cell.addEventListener('click', ()=> jumpTo(i));
+    navGrid.appendChild(cell);
+  }
+}
+
+function refreshNavGrid(){
+  const cells = navGrid.children;
+  for(let i=0;i<TOTAL;i++){
+    const cell = cells[i];
+    cell.classList.remove('current','correct','incorrect');
+    if(locked[i]){
+      cell.classList.add(selected[i] === QUESTIONS[i].correct ? 'correct' : 'incorrect');
+    }
+    if(i === current){ cell.classList.add('current'); }
+  }
+}
+
+function answeredCount(){
+  return locked.filter(Boolean).length;
+}
+
+function updateHeader(){
+  qCounter.textContent = (current+1) + ' / ' + TOTAL;
+  const ac = answeredCount();
+  answeredCounter.textContent = ac + ' / ' + TOTAL;
+  scoreCounter.textContent = score + ' / ' + TOTAL;
+  progressFill.style.width = ((ac/TOTAL)*100) + '%';
+  finishBtn.classList.toggle('visible', ac === TOTAL);
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  qIndexLabel.textContent = 'ITEM ' + String(current+1).padStart(2,'0');
+  qTopicLabel.textContent = q.topic.toUpperCase();
+  qText.textContent = q.q;
+  optionsList.innerHTML = '';
+
+  const isLocked = locked[current];
+  const chosen = selected[current];
+
+  q.options.forEach((optText, idx)=>{
+    const row = document.createElement('button');
+    row.className = 'option';
+    row.type = 'button';
+    row.setAttribute('aria-label', letters[idx] + '. ' + optText);
+
+    const badge = document.createElement('div');
+    badge.className = 'badge mono';
+    badge.textContent = letters[idx];
+
+    const span = document.createElement('div');
+    span.className = 'opt-text';
+    span.textContent = optText;
+
+    row.appendChild(badge);
+    row.appendChild(span);
+
+    if(isLocked){
+      row.classList.add('locked-row');
+      if(idx === q.correct){ row.classList.add('reveal-correct'); }
+      else if(idx === chosen){ row.classList.add('reveal-incorrect'); }
+    } else {
+      if(idx === chosen){ row.classList.add('selected'); }
+      row.addEventListener('click', ()=> selectOption(idx));
+    }
+    optionsList.appendChild(row);
+  });
+
+  // Feedback area
+  if(isLocked){
+    const wasCorrect = chosen === q.correct;
+    feedback.classList.add('show');
+    feedback.classList.toggle('correct', wasCorrect);
+    feedback.classList.toggle('incorrect', !wasCorrect);
+    if(wasCorrect){
+      fbTitle.textContent = '✓ CORRECT';
+      fbBody.innerHTML = 'Well analyzed — that is the defensible answer based on the reviewer.';
+    } else {
+      fbTitle.textContent = '✕ INCORRECT';
+      fbBody.innerHTML = '<div><b>CORRECT ANSWER:</b> ' + letters[q.correct] + '. ' + escapeHtml(q.options[q.correct]) + '</div>' +
+        '<span class="fb-concept-label">KEY CONCEPT TO REMEMBER</span>' +
+        '<div>' + escapeHtml(q.concept) + '</div>';
+    }
+  } else {
+    feedback.classList.remove('show','correct','incorrect');
+  }
+
+  submitBtn.disabled = isLocked || chosen === null;
+  submitBtn.textContent = isLocked ? 'Answer Locked' : 'Submit Answer';
+  prevBtn.disabled = current === 0;
+
+  const ac = answeredCount();
+  if(current === TOTAL-1 && ac === TOTAL){
+    nextBtn.textContent = 'View Results →';
+    nextBtn.disabled = false;
+  } else if(current === TOTAL-1){
+    nextBtn.textContent = 'Next →';
+    nextBtn.disabled = true;
+  } else {
+    nextBtn.textContent = 'Next →';
+    nextBtn.disabled = false;
+  }
+
+  refreshNavGrid();
+  updateHeader();
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function selectOption(idx){
+  if(locked[current]) return;
+  selected[current] = idx;
+  renderQuestion();
+}
+
+function submitAnswer(){
+  if(locked[current] || selected[current] === null) return;
+  locked[current] = true;
+  if(selected[current] === QUESTIONS[current].correct){
+    score += 1;
+  }
+  renderQuestion();
+}
+
+function jumpTo(i){
+  if(i < 0 || i >= TOTAL) return;
+  current = i;
+  renderQuestion();
+}
+
+function goPrev(){ if(current>0){ current -= 1; renderQuestion(); } }
+function goNext(){
+  const ac = answeredCount();
+  if(current === TOTAL-1 && ac === TOTAL){
+    showResults();
+    return;
+  }
+  if(current < TOTAL-1){ current += 1; renderQuestion(); }
+}
+
+function showResults(){
+  examGrid.classList.add('hidden');
+  resultsScreen.classList.add('show');
+  window.scrollTo({top:0, behavior:'smooth'});
+
+  const pct = Math.round((score/TOTAL)*1000)/10;
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('finalPct').textContent = pct + '% overall';
+  document.getElementById('totalAnswered').textContent = answeredCount();
+  document.getElementById('totalCorrect').textContent = score;
+  document.getElementById('totalIncorrect').textContent = answeredCount() - score;
+
+  const assessEl = document.getElementById('assessment');
+  let label, color;
+  if(pct >= 90){ label = 'EXCELLENT — BOARD-EXAM READY'; color = 'var(--correct)'; }
+  else if(pct >= 75){ label = 'PASSING — SOLID GRASP, REVIEW WEAK AREAS'; color = 'var(--accent)'; }
+  else if(pct >= 60){ label = 'NEEDS REVIEW — GAPS IN CORE CONCEPTS'; color = 'var(--incorrect)'; }
+  else { label = 'INSUFFICIENT — RESTUDY FUNDAMENTALS'; color = 'var(--incorrect)'; }
+  assessEl.textContent = label;
+  assessEl.style.color = color;
+  assessEl.style.borderColor = color;
+
+  const reviewList = document.getElementById('reviewList');
+  reviewList.innerHTML = '';
+  QUESTIONS.forEach((q, i)=>{
+    const sel = selected[i];
+    const isCorrect = sel === q.correct;
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML =
+      '<div class="review-head">' +
+        '<span class="review-num mono">ITEM ' + String(i+1).padStart(2,'0') + ' · ' + escapeHtml(q.topic) + '</span>' +
+        '<span class="review-status ' + (isCorrect?'correct':'incorrect') + '">' + (isCorrect?'CORRECT':'INCORRECT') + '</span>' +
+      '</div>' +
+      '<div class="review-q">' + escapeHtml(q.q) + '</div>' +
+      '<div class="review-ans">' +
+        '<div><b>Your answer:</b> ' + (sel===null ? '— (unanswered)' : letters[sel] + '. ' + escapeHtml(q.options[sel])) + '</div>' +
+        '<div><b>Correct answer:</b> ' + letters[q.correct] + '. ' + escapeHtml(q.options[q.correct]) + '</div>' +
+      '</div>' +
+      (isCorrect ? '' : '<div class="review-concept"><span class="lbl">KEY CONCEPT TO REMEMBER</span>' + escapeHtml(q.concept) + '</div>');
+    reviewList.appendChild(item);
+  });
+}
+
+function retakeExam(){
+  current = 0;
+  selected = new Array(TOTAL).fill(null);
+  locked = new Array(TOTAL).fill(false);
+  score = 0;
+  resultsScreen.classList.remove('show');
+  examGrid.classList.remove('hidden');
+  renderQuestion();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+submitBtn.addEventListener('click', submitAnswer);
+prevBtn.addEventListener('click', goPrev);
+nextBtn.addEventListener('click', goNext);
+finishBtn.addEventListener('click', showResults);
+document.getElementById('retakeBtn').addEventListener('click', retakeExam);
+
+buildNavGrid();
+renderQuestion();
+</script>
+</body>
+</html>
