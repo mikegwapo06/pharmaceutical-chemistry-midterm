@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>BJT — 50-Item University Mock Examination</title>
+<style>
+  :root {
+    --ink: #17211d;
+    --muted: #65736c;
+    --paper: #f3f6f2;
+    --card: #ffffff;
+    --line: #dce5de;
+    --green: #245b42;
+    --green-dark: #17412f;
+    --green-soft: #e8f2eb;
+    --lime: #b7d96b;
+    --correct: #187443;
+    --correct-bg: #e9f6ed;
+    --wrong: #b33a36;
+    --wrong-bg: #fff0ef;
+    --shadow: 0 8px 26px rgba(23, 48, 34, .07);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.5;
+  }
+  .hero {
+    background: linear-gradient(120deg, #173e2d, #245b42 72%, #326a4b);
+    color: white;
+    padding: 34px 20px 30px;
+    border-bottom: 5px solid var(--lime);
+  }
+  .hero-inner, main { width: min(980px, calc(100% - 32px)); margin: 0 auto; }
+  .eyebrow {
+    color: #d8ecb1; text-transform: uppercase; letter-spacing: .13em;
+    font-size: .75rem; font-weight: 800; margin: 0 0 8px;
+  }
+  h1 { margin: 0; font-size: clamp(1.65rem, 4vw, 2.45rem); line-height: 1.12; letter-spacing: -.035em; }
+  .subtitle { margin: 10px 0 0; color: #e1ece5; max-width: 700px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .meta span { border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 5px 11px; font-size: .82rem; color: #f0f6f1; }
+  main { padding: 22px 0 56px; }
+  .instructions {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 16px 18px; box-shadow: var(--shadow); margin-bottom: 16px;
+  }
+  .instructions strong { color: var(--green-dark); }
+  .instructions p { margin: 3px 0; color: var(--muted); font-size: .94rem; }
+  .statusbar {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    position: sticky; top: 0; z-index: 5; margin: 0 0 16px; padding: 11px 14px;
+    background: rgba(243,246,242,.94); backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: 14px;
+  }
+  .status-text { font-size: .9rem; font-weight: 700; color: var(--green-dark); }
+  .progress-track { width: min(260px, 42vw); height: 8px; background: #dfe8e1; border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--green); border-radius: inherit; transition: width .2s ease; }
+  .question-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+    padding: 20px 20px 17px; margin: 0 0 13px; box-shadow: var(--shadow);
+    scroll-margin-top: 86px;
+  }
+  .question-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .number {
+    flex: 0 0 34px; height: 34px; display: grid; place-items: center;
+    border-radius: 10px; background: var(--green-soft); color: var(--green-dark);
+    font-weight: 850; font-size: .9rem;
+  }
+  .question-text { margin: 3px 0 0; font-weight: 730; font-size: 1.02rem; letter-spacing: -.01em; }
+  .options { display: grid; gap: 8px; margin-left: 46px; }
+  .option {
+    display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+    border: 1px solid #e1e8e2; border-radius: 11px; cursor: pointer;
+    background: #fff; transition: border-color .15s, background .15s, transform .15s;
+  }
+  .option:hover { border-color: #9ab8a3; background: #fbfdfb; }
+  .option:has(input:checked) { border-color: var(--green); background: var(--green-soft); }
+  .option input { margin: 3px 0 0; accent-color: var(--green); flex: 0 0 auto; }
+  .letter { font-weight: 850; color: var(--green-dark); min-width: 19px; }
+  .option-text { font-size: .94rem; }
+  .question-card.is-correct { border-color: #8bc6a0; }
+  .question-card.is-wrong { border-color: #e2a09d; }
+  .option.correct-option { border-color: #76b68b; background: var(--correct-bg); }
+  .option.wrong-option { border-color: #d98f8b; background: var(--wrong-bg); }
+  .feedback { display: none; margin: 14px 0 0 46px; padding: 11px 13px; border-radius: 10px; font-size: .9rem; }
+  .feedback.show { display: block; }
+  .feedback.good { color: #145c36; background: var(--correct-bg); }
+  .feedback.bad { color: #852a27; background: var(--wrong-bg); }
+  .feedback strong { display: block; margin-bottom: 3px; }
+  .results {
+    display: none; background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+    padding: 21px; margin: 20px 0; box-shadow: var(--shadow);
+  }
+  .results.show { display: block; }
+  .results h2 { margin: 0 0 15px; color: var(--green-dark); font-size: 1.35rem; }
+  .score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .score-box { background: #f5f8f5; border: 1px solid var(--line); padding: 13px; border-radius: 12px; }
+  .score-box span { display: block; color: var(--muted); font-size: .78rem; font-weight: 700; }
+  .score-box strong { display: block; font-size: 1.55rem; color: var(--green-dark); margin-top: 3px; }
+  .result-note { color: var(--muted); font-size: .9rem; margin: 13px 0 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 0; }
+  button {
+    border: 0; border-radius: 11px; padding: 12px 18px; font: inherit; font-weight: 800;
+    cursor: pointer; transition: transform .12s, opacity .12s, background .12s;
+  }
+  button:hover { transform: translateY(-1px); }
+  button:focus-visible, input:focus-visible + span { outline: 3px solid #8bbd96; outline-offset: 3px; }
+  .primary { color: white; background: var(--green); }
+  .primary:hover { background: var(--green-dark); }
+  .secondary { color: var(--green-dark); background: #e5ede7; border: 1px solid #cbd9ce; }
+  button:disabled { cursor: not-allowed; opacity: .55; transform: none; }
+  .footer-note { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 24px; }
+  @media (max-width: 620px) {
+    .hero { padding: 28px 16px 24px; }
+    .hero-inner, main { width: min(100% - 22px, 980px); }
+    .question-card { padding: 15px 13px 14px; }
+    .question-head { gap: 9px; }
+    .number { flex-basis: 31px; height: 31px; }
+    .question-text { font-size: .97rem; }
+    .options, .feedback { margin-left: 0; }
+    .option { padding: 10px; }
+    .option-text { font-size: .91rem; }
+    .score-grid { grid-template-columns: repeat(2, 1fr); }
+    .statusbar { padding: 10px; }
+  }
+  @media print {
+    body { background: white; }
+    .hero { background: white; color: black; border-bottom: 2px solid #333; padding: 18px 0; }
+    .eyebrow, .subtitle, .meta, .statusbar, .actions, .footer-note { display: none !important; }
+    .hero-inner, main { width: 100%; }
+    .question-card { break-inside: avoid; box-shadow: none; }
+    .option { padding: 5px; }
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Semiconductor Devices · Group 1 Presentation</p>
+    <h1>Bipolar Junction Transistor</h1>
+    <p class="subtitle">50-item university-level mock examination focused on BJT construction, semiconductor fundamentals, carrier movement, biasing, operating regions, and applications.</p>
+    <div class="meta"><span>50 Multiple-Choice Items</span><span>4 Choices Each</span><span>Self-Scoring</span><span>No Internet Required</span></div>
+  </div>
+</header>
+<main>
+  <section class="instructions" aria-label="Instructions">
+    <strong>Examination instructions</strong>
+    <p>Select one answer (A–D) for every item. Submit your answers to see your score, the correct answer for each missed item, and a short concept explanation. Your score is based on 50 items.</p>
+  </section>
+  <div class="statusbar" aria-live="polite">
+    <div class="status-text" id="progressText">0 of 50 answered</div>
+    <div class="progress-track" role="progressbar" aria-label="Exam completion" aria-valuemin="0" aria-valuemax="50" aria-valuenow="0" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <form id="examForm" novalidate>
+    <div id="questions"></div>
+    <section class="results" id="results" aria-live="polite">
+      <h2>Examination Results</h2>
+      <div class="score-grid">
+        <div class="score-box"><span>Total score</span><strong id="scoreValue">0 / 50</strong></div>
+        <div class="score-box"><span>Percentage</span><strong id="percentValue">0%</strong></div>
+        <div class="score-box"><span>Correct answers</span><strong id="correctValue">0</strong></div>
+        <div class="score-box"><span>Incorrect answers</span><strong id="incorrectValue">0</strong></div>
+      </div>
+      <p class="result-note" id="resultNote"></p>
+    </section>
+    <div class="actions">
+      <button class="primary" id="submitBtn" type="submit">Submit / Check Answers</button>
+      <button class="secondary" id="resetBtn" type="button">Retake / Reset Exam</button>
+    </div>
+  </form>
+  <p class="footer-note">Prepared only from the uploaded “Group-1-Elecs-Complete” presentation. All functionality is built into this file.</p>
+</main>
+<script>
+const QUESTIONS = [{"q": "According to the presentation, what is the primary role of a bipolar junction transistor in a circuit?", "explanation": "The presentation defines a BJT as a component used to control current flow in a circuit.", "choices": ["To generate electrical energy for the load", "To convert alternating current into direct current", "To store charge for later circuit operation", "To control the flow of electric current"], "answer": 3}, {"q": "Which pair correctly identifies the two main jobs of a BJT?", "explanation": "The slides identify switching (ON/OFF) and amplification as the two main BJT functions.", "choices": ["Regulation and frequency conversion", "Oscillation and energy storage", "Switching and amplification", "Rectification and filtering"], "answer": 2}, {"q": "In the presentation's description of a BJT circuit, which statement correctly distinguishes the supply from the transistor?", "explanation": "The supply is the energy source; the transistor controls the path through which current flows.", "choices": ["The BJT provides energy, while the supply controls the current path.", "The supply provides energy, while the BJT controls the current path.", "The supply controls the carriers, while the BJT stores the energy.", "Both the supply and BJT only provide energy to the load."], "answer": 1}, {"q": "Which set contains the three terminals of a BJT?", "explanation": "The three BJT terminals are the emitter (E), base (B), and collector (C).", "choices": ["Source, gate, and drain", "Emitter, base, and collector", "Anode, cathode, and gate", "Input, output, and ground"], "answer": 1}, {"q": "Which description best matches the general construction of a BJT?", "explanation": "A BJT has three semiconductor regions and two PN junctions; its outer regions share one type and its thin middle region is the opposite type.", "choices": ["One PN junction forms two regions with equal doping levels.", "Two metal contacts surround one uniformly doped semiconductor region.", "Three PN junctions form four regions with alternating conductivity.", "Two PN junctions form three regions, with the outer regions alike and the middle region opposite."], "answer": 3}, {"q": "Why is the BJT described as a bipolar device in the presentation?", "explanation": "The term reflects the use of both negative carriers (electrons) and positive carriers (holes).", "choices": ["It has two collector terminals in every configuration.", "It contains two bases that carry equal current.", "It uses both electrons and holes as charge carriers.", "It operates with two power supplies of opposite polarity."], "answer": 2}, {"q": "What is the main function of the emitter region?", "explanation": "The emitter supplies or emits electrons or holes into the base.", "choices": ["It removes heat from the collector-base junction only.", "It controls current by acting as the thin middle region.", "It supplies charge carriers into the base region.", "It collects most carriers after they cross the base."], "answer": 2}, {"q": "Which statement correctly describes the base of a BJT?", "explanation": "The base is deliberately thin and lightly doped, allowing it to control current while limiting recombination.", "choices": ["It is a metal region that electrically isolates the two junctions.", "It is a thick, heavily doped region that supplies most carriers.", "It is a very thin, lightly doped region that controls carrier flow.", "It is the largest region and is designed mainly to collect heat."], "answer": 2}, {"q": "What is the principal role of the collector?", "explanation": "The collector receives most carriers that travel from the emitter through the base.", "choices": ["It collects most charge carriers arriving through the base.", "It injects the initial supply of charge carriers into the base.", "It provides the thin control region between the other two regions.", "It creates the majority carriers by adding dopant atoms during operation."], "answer": 0}, {"q": "Which semiconductor-layer arrangement represents an NPN transistor?", "explanation": "An NPN transistor has an N-type emitter, a P-type base, and an N-type collector.", "choices": ["P-type, P-type, then N-type", "P-type, N-type, then P-type", "N-type, N-type, then P-type", "N-type, P-type, then N-type"], "answer": 3}, {"q": "Which semiconductor-layer arrangement represents a PNP transistor?", "explanation": "A PNP transistor has P-type outer regions separated by an N-type base.", "choices": ["P-type, P-type, then N-type", "N-type, N-type, then P-type", "P-type, N-type, then P-type", "N-type, P-type, then N-type"], "answer": 2}, {"q": "Which carriers are injected by the emitter of an NPN transistor, as described in the construction section?", "explanation": "The NPN emitter is heavily doped and injects electrons into the P-type base.", "choices": ["Holes", "Positive ions", "Bound electron pairs", "Electrons"], "answer": 3}, {"q": "Which carriers are injected by the emitter of a PNP transistor?", "explanation": "The PNP emitter injects holes; the PNP structure reverses the NPN conductivity arrangement.", "choices": ["Electrons", "Holes", "Free donor atoms", "Negative ions"], "answer": 1}, {"q": "Why is the BJT base made very thin and lightly doped?", "explanation": "A thin, lightly doped base allows most injected carriers to pass through, with only a few recombining.", "choices": ["So that only a few injected carriers recombine in it.", "So that nearly all injected carriers recombine before reaching the collector.", "So that it becomes the largest region for handling heat.", "So that it can inject more carriers than the emitter."], "answer": 0}, {"q": "The presentation states that the collector has a larger area. What purpose is associated with this construction?", "explanation": "The larger collector area is described as helping collect carriers and handle heat and voltage.", "choices": ["Collecting carriers and handling heat and voltage", "Injecting carriers and minimizing the base current", "Reducing the emitter's carrier supply to zero", "Creating holes and setting the doping concentration"], "answer": 0}, {"q": "How does the PNP conductivity arrangement relate to the NPN arrangement?", "explanation": "The PNP arrangement is the reverse conductivity sequence of the NPN structure.", "choices": ["It removes the base region from the NPN arrangement.", "It reverses the NPN arrangement.", "It duplicates the NPN arrangement but changes the terminal names.", "It replaces both outer regions with intrinsic material."], "answer": 1}, {"q": "What does doping mean in the semiconductor fundamentals section?", "explanation": "Doping deliberately adds controlled impurities to change the concentration of mobile carriers.", "choices": ["Heating a semiconductor until it becomes a conductor", "Adding controlled impurities to a semiconductor", "Removing all mobile carriers from a semiconductor", "Joining two semiconductor devices without a junction"], "answer": 1}, {"q": "A semiconductor described as intrinsic is best characterized as:", "explanation": "The presentation defines intrinsic material as relatively pure.", "choices": ["Relatively pure", "Intentionally doped with acceptor atoms", "Intentionally doped with donor atoms", "Made from alternating P-type and N-type layers"], "answer": 0}, {"q": "A semiconductor described as extrinsic is one that is:", "explanation": "Extrinsic material has been intentionally doped with controlled impurities.", "choices": ["Intentionally doped", "Relatively pure and without added impurities", "Operating only under reverse bias", "Composed only of holes"], "answer": 0}, {"q": "Which dopant type is associated with N-type material in the presentation?", "explanation": "N-type material uses donor dopants; phosphorus is given as an example.", "choices": ["A donor dopant, such as phosphorus", "A collector material with no mobile carriers", "An acceptor dopant, such as boron", "A pure material with no dopants"], "answer": 0}, {"q": "Which dopant type is associated with P-type material in the presentation?", "explanation": "P-type material uses acceptor dopants; boron is given as an example.", "choices": ["A donor dopant, such as phosphorus", "A pure material with no dopants", "An acceptor dopant, such as boron", "A metal dopant used only in the collector"], "answer": 2}, {"q": "In N-type semiconductor material, which carrier is the majority carrier?", "explanation": "N-type material has electrons as majority carriers and holes as minority carriers.", "choices": ["Protons", "Electrons", "Positive ions", "Holes"], "answer": 1}, {"q": "In P-type semiconductor material, which carrier is the majority carrier?", "explanation": "P-type material has holes as majority carriers and electrons as minority carriers.", "choices": ["Donor atoms", "Negative ions", "Electrons", "Holes"], "answer": 3}, {"q": "How does the presentation define a hole in a semiconductor?", "explanation": "A hole is an electron vacancy and behaves as a positive mobile charge carrier.", "choices": ["An electron vacancy that behaves like a positive mobile carrier", "An extra electron that behaves like a negative carrier", "A fixed positive ion that cannot move", "A missing dopant atom that blocks current flow"], "answer": 0}, {"q": "What happens to the overall electrical neutrality of a semiconductor after doping, according to the slides?", "explanation": "Although doping changes carrier concentrations, the material remains approximately neutral overall.", "choices": ["It remains approximately electrically neutral overall.", "It becomes permanently negative in P-type material.", "It loses electrical neutrality whenever carriers become mobile.", "It becomes permanently positive in N-type material."], "answer": 0}, {"q": "For an NPN transistor in forward-active operation, how are the emitter-base and collector-base junctions biased, respectively?", "explanation": "Forward-active operation uses a forward-biased emitter-base junction and a reverse-biased collector-base junction.", "choices": ["Both emitter-base and collector-base forward", "Both emitter-base and collector-base reverse", "Emitter-base reverse; collector-base forward", "Emitter-base forward; collector-base reverse"], "answer": 3}, {"q": "Which sequence best describes carrier movement in an NPN transistor operating in the forward-active region?", "explanation": "The slides describe emitter injection, limited base recombination, and collection of most carriers at the collector.", "choices": ["Electrons leave the emitter, some recombine in the base, and most are collected.", "Electrons leave the collector, recombine in the emitter, and return to the base.", "Electrons are generated in the collector and move through the base toward the emitter.", "Holes leave the base, enter the collector, and are injected into the emitter."], "answer": 0}, {"q": "In the NPN forward-active process, what is the result of the few electrons that recombine in the base?", "explanation": "The presentation links the few carriers that recombine in the base to the base current.", "choices": ["Their recombination creates the collector voltage.", "They stop the collector-base junction from being reverse-biased.", "They become the holes injected by the emitter.", "Their recombination contributes to the base current."], "answer": 3}, {"q": "In the NPN forward-active region, what happens to most electrons that pass through the thin base?", "explanation": "The reverse-biased collector-base junction sweeps most carriers into the collector.", "choices": ["They recombine in the base and produce the entire base current.", "They remain stored in the base until the transistor turns off.", "They are swept across the collector-base junction into the collector.", "They return to the emitter through the emitter-base junction."], "answer": 2}, {"q": "Which direction represents electron flow in the NPN transistor's forward-active operation?", "explanation": "The direction check in the presentation gives electron flow as E → B → C.", "choices": ["Collector to base to emitter", "Emitter to base to collector", "Emitter to collector to base", "Base to collector to emitter"], "answer": 1}, {"q": "Which direction represents the conventional main current in the NPN transistor, as shown in the presentation?", "explanation": "The slides distinguish electron flow (E → B → C) from conventional main current (C → E).", "choices": ["Collector to emitter", "Emitter to collector", "Emitter to base", "Base to emitter"], "answer": 0}, {"q": "The presentation gives a typical silicon base-emitter voltage near 0.7 V. How should this value be interpreted?", "explanation": "The slide explicitly cautions that the silicon VBE value near 0.7 V is approximate, not fixed.", "choices": ["It is an exact value for every silicon BJT.", "It is an approximate value, not a fixed value.", "It applies only when both junctions are reverse-biased.", "It is the required collector-emitter voltage in cutoff."], "answer": 1}, {"q": "Which relationship is given as the forward-active approximation for collector current?", "explanation": "The presentation gives IC ≈ βIB as a forward-active approximation only.", "choices": ["IB ≈ βIC", "IE ≈ βIC", "IC ≈ βIB", "IC ≈ βIE"], "answer": 2}, {"q": "Which equation expresses the relationship among emitter, collector, and base currents in the slides?", "explanation": "The stated current relationship is IE = IC + IB, consistent with the current sum at the transistor.", "choices": ["IE = IC − IB", "IC = IE + IB", "IB = IE + IC", "IE = IC + IB"], "answer": 3}, {"q": "Why can a relatively small base current control a much larger collector current in forward-active operation?", "explanation": "The current-gain relationship IC ≈ βIB describes how a small IB controls a larger IC in forward-active operation.", "choices": ["The collector current is always equal to the emitter current.", "The collector current is approximately the base current multiplied by β.", "The base region stores the collector current before releasing it.", "The base current supplies all the energy delivered to the collector."], "answer": 1}, {"q": "Which junction-bias condition corresponds to the cutoff region in the operating-region table?", "explanation": "In cutoff, the table shows reverse bias at both the emitter-base and collector-base junctions.", "choices": ["Both emitter-base and collector-base junctions are reverse-biased.", "Emitter-base is reverse-biased and collector-base is forward-biased.", "Both junctions are forward-biased.", "Emitter-base is forward-biased and collector-base is reverse-biased."], "answer": 0}, {"q": "Which pair of junction biases identifies the forward-active region?", "explanation": "Forward-active operation requires forward bias at the emitter-base junction and reverse bias at the collector-base junction.", "choices": ["Emitter-base reverse-biased; collector-base forward-biased", "Both junctions forward-biased", "Both junctions reverse-biased", "Emitter-base forward-biased; collector-base reverse-biased"], "answer": 3}, {"q": "Which pair of junction biases identifies the saturation region?", "explanation": "The presentation identifies saturation by forward bias at both junctions.", "choices": ["Both junctions are reverse-biased.", "Both emitter-base and collector-base junctions are forward-biased.", "Emitter-base is forward-biased and collector-base is reverse-biased.", "Emitter-base is reverse-biased and collector-base is forward-biased."], "answer": 1}, {"q": "A BJT is being used as an OFF switch. Which operating region should it be in?", "explanation": "The presentation associates cutoff with the OFF state.", "choices": ["Cutoff", "Saturation", "Reverse active", "Forward active"], "answer": 0}, {"q": "A BJT is intended to amplify a changing input signal proportionally. Which region is appropriate?", "explanation": "The forward-active region is the amplification or linear operating region.", "choices": ["Reverse active", "Forward active", "Saturation", "Cutoff"], "answer": 1}, {"q": "A BJT is being driven fully ON as a switch. Which operating region corresponds to this state?", "explanation": "The slides associate saturation with the ON state of a switching transistor.", "choices": ["Reverse active", "Cutoff", "Saturation", "Forward active"], "answer": 2}, {"q": "What does the presentation say about the collector-emitter voltage in saturation?", "explanation": "The presentation states that saturation has a low but nonzero VCE(sat).", "choices": ["VCE(sat) is equal to the base-emitter voltage in every case.", "VCE(sat) is larger than the supply voltage.", "VCE(sat) is low but nonzero.", "VCE(sat) is always exactly zero."], "answer": 2}, {"q": "Which statement about cutoff in a real BJT is supported by the presentation?", "explanation": "The slides note that a small leakage current remains in real devices during cutoff.", "choices": ["The collector current becomes infinitely large.", "A small leakage current can remain.", "The transistor produces a fixed base current for amplification.", "Both junctions become forward-biased."], "answer": 1}, {"q": "Which comparison between cutoff and saturation is correct?", "explanation": "The operating-region table distinguishes cutoff (both reverse) from saturation (both forward).", "choices": ["Cutoff has both junctions reverse-biased; saturation has both forward-biased.", "Cutoff has both junctions forward-biased; saturation has both reverse-biased.", "Both regions have a reverse-biased emitter-base junction and forward-biased collector-base junction.", "Both regions have a forward-biased emitter-base junction and reverse-biased collector-base junction."], "answer": 0}, {"q": "Which pair of operating regions is used when a BJT acts as a digital or automation switch?", "explanation": "The presentation describes switching between cutoff (OFF) and saturation (ON) for digital and automation circuits.", "choices": ["Forward active and reverse active", "Cutoff and saturation", "Forward active and cutoff only", "Reverse active and saturation only"], "answer": 1}, {"q": "What characterizes amplification in the forward-active region, according to the applications slide?", "explanation": "In the active region, a small changing input produces a larger proportional change at the output.", "choices": ["A fixed input signal forces both junctions into reverse bias.", "The transistor stores the input signal and releases it later.", "The output remains unchanged regardless of the input signal.", "A small changing input signal produces a larger proportional output change."], "answer": 3}, {"q": "A transistor has a forward-biased base-emitter junction and a reverse-biased base-collector junction. Which mode is indicated?", "explanation": "This is the defining junction-bias combination for forward-active operation.", "choices": ["Saturation", "Cutoff", "Reverse active", "Forward active"], "answer": 3}, {"q": "Which description matches the reverse-active mode in the four-mode table?", "explanation": "The table describes reverse active as the inverted bias condition and notes that it is rare and has low gain.", "choices": ["Both junctions forward-biased; normal operation with high gain", "Emitter-base forward-biased, collector-base reverse-biased; switching OFF", "Emitter-base reverse-biased, collector-base forward-biased; inverted operation with low gain", "Both junctions reverse-biased; normal amplification with high gain"], "answer": 2}, {"q": "According to the parameters slide, which statement correctly associates α and β with transistor configurations?", "explanation": "The presentation associates α with common-base configurations and β with common-emitter and feedback configurations.", "choices": ["Alpha (α) is associated with common-emitter use, while beta (β) is associated with common-base use.", "Alpha (α) describes the base doping, while beta (β) describes the collector area.", "Both α and β refer only to the saturation voltage of the transistor.", "Alpha (α) is associated with common-base use, while beta (β) is associated with common-emitter and feedback use."], "answer": 3}, {"q": "For the PNP transistor, which voltage relationship is stated in the operational comparison?", "explanation": "The PNP description states that the emitter voltage must be higher than the base voltage for the stated operating condition.", "choices": ["The base voltage is higher than the emitter voltage.", "The collector voltage must equal the emitter voltage.", "The emitter voltage is higher than the base voltage.", "The emitter and base voltages must always be equal."], "answer": 2}];
+const LETTERS = ["A", "B", "C", "D"];
+const questionsContainer = document.getElementById("questions");
+const examForm = document.getElementById("examForm");
+const submitBtn = document.getElementById("submitBtn");
+const resetBtn = document.getElementById("resetBtn");
+let submitted = false;
+
+function renderQuestions() {
+  questionsContainer.innerHTML = QUESTIONS.map((item, index) => `
+    <section class="question-card" id="question-${index + 1}" data-question="${index}">
+      <div class="question-head">
+        <div class="number">${index + 1}</div>
+        <p class="question-text">${escapeHTML(item.q)}</p>
+      </div>
+      <div class="options">
+        ${item.choices.map((choice, choiceIndex) => `
+          <label class="option" data-choice="${choiceIndex}">
+            <input type="radio" name="q${index}" value="${choiceIndex}" aria-label="Question ${index + 1}, option ${LETTERS[choiceIndex]}">
+            <span class="letter">${LETTERS[choiceIndex]}.</span>
+            <span class="option-text">${escapeHTML(choice)}</span>
+          </label>
+        `).join("")}
+      </div>
+      <div class="feedback" id="feedback-${index}" aria-live="polite"></div>
+    </section>
+  `).join("");
+  questionsContainer.querySelectorAll('input[type="radio"]').forEach(input => {
+    input.addEventListener("change", updateProgress);
+  });
+  updateProgress();
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[char]));
+}
+
+function updateProgress() {
+  const answered = QUESTIONS.reduce((total, item, index) => {
+    return total + (examForm.querySelector(`input[name="q${index}"]:checked`) ? 1 : 0);
+  }, 0);
+  document.getElementById("progressText").textContent = `${answered} of ${QUESTIONS.length} answered`;
+  document.getElementById("progressFill").style.width = `${answered / QUESTIONS.length * 100}%`;
+  document.getElementById("progressBar").setAttribute("aria-valuenow", String(answered));
+}
+
+function submitExam(event) {
+  event.preventDefault();
+  if (submitted) return;
+  const unanswered = QUESTIONS.reduce((total, item, index) => {
+    return total + (examForm.querySelector(`input[name="q${index}"]:checked`) ? 0 : 1);
+  }, 0);
+  let correct = 0;
+
+  QUESTIONS.forEach((item, index) => {
+    const card = document.getElementById(`question-${index + 1}`);
+    const selected = examForm.querySelector(`input[name="q${index}"]:checked`);
+    const selectedIndex = selected ? Number(selected.value) : -1;
+    const isCorrect = selectedIndex === item.answer;
+    if (isCorrect) correct++;
+
+    card.classList.toggle("is-correct", isCorrect);
+    card.classList.toggle("is-wrong", !isCorrect);
+    card.querySelectorAll(".option").forEach((label, choiceIndex) => {
+      label.classList.toggle("correct-option", choiceIndex === item.answer);
+      label.classList.toggle("wrong-option", selectedIndex === choiceIndex && !isCorrect);
+      label.querySelector("input").disabled = true;
+    });
+
+    const feedback = document.getElementById(`feedback-${index}`);
+    feedback.className = `feedback show ${isCorrect ? "good" : "bad"}`;
+    if (isCorrect) {
+      feedback.innerHTML = `<strong>Correct — ${LETTERS[item.answer]}.</strong>${escapeHTML(item.explanation)}`;
+    } else {
+      const status = selectedIndex === -1 ? "Not answered" : `Your answer: ${LETTERS[selectedIndex]}.`;
+      feedback.innerHTML = `<strong>${status} Correct answer: ${LETTERS[item.answer]}.</strong>${escapeHTML(item.explanation)}`;
+    }
+  });
+
+  const incorrect = QUESTIONS.length - correct;
+  const percentage = correct / QUESTIONS.length * 100;
+  document.getElementById("scoreValue").textContent = `${correct} / ${QUESTIONS.length}`;
+  document.getElementById("percentValue").textContent = `${percentage.toFixed(1).replace(".0", "")}%`;
+  document.getElementById("correctValue").textContent = String(correct);
+  document.getElementById("incorrectValue").textContent = String(incorrect);
+  document.getElementById("resultNote").textContent = unanswered
+    ? `${unanswered} item(s) were left unanswered and are counted as incorrect. Review the marked answers and concept notes above.`
+    : "All 50 items were answered. Review the marked answers and concept notes above.";
+
+  const results = document.getElementById("results");
+  results.classList.add("show");
+  submitted = true;
+  submitBtn.disabled = true;
+  results.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetExam() {
+  submitted = false;
+  examForm.reset();
+  document.getElementById("results").classList.remove("show");
+  submitBtn.disabled = false;
+  renderQuestions();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+examForm.addEventListener("submit", submitExam);
+resetBtn.addEventListener("click", resetExam);
+renderQuestions();
+</script>
+</body>
+</html>
